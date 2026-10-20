@@ -1,0 +1,43 @@
+id = "seankao31.herdr-pane-status"
+name = "Pane Status"
+version = "0.1.0"
+min_herdr_version = "0.9.5"
+description = "Marks the panes whose agent finished or needs you, on the pane border, until you look at them."
+platforms = ["linux", "macos", "windows"]
+
+# GitHub installs build the binary, so they need cargo. `herdr plugin link`
+# doesn't build: run `cargo build --release` in the checkout first.
+[[build]]
+command = ["cargo", "build", "--release", "--locked"]
+
+# The hook starts the daemon unless it is running: on startup, and on every
+# new pane or focus change, so a daemon that died is back the next time you
+# move between panes. Not on pane.agent_status_changed: every title a plugin
+# reports fires that event, several times a second for an animated one.
+[[startup]]
+platforms = ["linux", "macos"]
+command = ["target/release/herdr-pane-status", "ensure"]
+
+[[startup]]
+platforms = ["windows"]
+command = ["target/release/herdr-pane-status.exe", "ensure"]
+
+[[events]]
+on = "pane.created"
+platforms = ["linux", "macos"]
+command = ["target/release/herdr-pane-status", "ensure"]
+
+[[events]]
+on = "pane.created"
+platforms = ["windows"]
+command = ["target/release/herdr-pane-status.exe", "ensure"]
+
+[[events]]
+on = "pane.focused"
+platforms = ["linux", "macos"]
+command = ["target/release/herdr-pane-status", "ensure"]
+
+[[events]]
+on = "pane.focused"
+platforms = ["windows"]
+command = ["target/release/herdr-pane-status.exe", "ensure"]
